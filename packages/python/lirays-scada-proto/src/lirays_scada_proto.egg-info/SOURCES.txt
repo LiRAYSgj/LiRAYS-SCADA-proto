@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/lirays_scada_proto.egg-info/PKG-INFO
+src/lirays_scada_proto.egg-info/SOURCES.txt
+src/lirays_scada_proto.egg-info/dependency_links.txt
+src/lirays_scada_proto.egg-info/requires.txt
+src/lirays_scada_proto.egg-info/top_level.txt
+src/namespace/__init__.py
+src/namespace/commands_pb2.py
+src/namespace/enums_pb2.py
+src/namespace/events_pb2.py
+src/namespace/types_pb2.py

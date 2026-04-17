@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package namespace;
+
+import "namespace/types.proto";
+
+message FolderChanged {
+    string folder_id = 1;
+    bool reload = 2;
+    repeated string removed_items = 3;
+    repeated FolderInfo new_folders = 4;
+    repeated VarInfo new_variables = 5;
+}
+
+message VarMetaChanged {
+    string var_id = 1;
+    optional string unit = 2;
+    optional double min = 3;
+    optional double max = 4;
+    repeated string options = 5;
+    optional uint64 max_len = 6;
+}
+
+message TreeChanged {
+    repeated FolderChanged folder_changed_event = 1;
+    repeated VarMetaChanged var_meta_changed_event = 2;
+}
+
+message Event {
+  oneof ev {
+    VarIdValue var_value_ev = 1;
+    TreeChanged tree_changed_ev = 2;
+  }
+}
+
+// Internal batch used between server components; not sent directly to frontend.
+message EventBatch {
+  repeated Event events = 1;
+}

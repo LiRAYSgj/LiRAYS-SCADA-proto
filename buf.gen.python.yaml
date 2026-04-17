@@ -1,0 +1,5 @@
+version: v2
+clean: true
+plugins:
+  - remote: buf.build/protocolbuffers/python
+    out: packages/python/lirays-scada-proto/src

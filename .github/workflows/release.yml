@@ -1,0 +1,206 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve tag version
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Verify versions are synchronized
+        run: ./scripts/check-version-sync.sh "${{ steps.version.outputs.version }}"
+
+  proto-quality:
+    runs-on: ubuntu-latest
+    needs: prepare-release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Lint protobuf definitions
+        run: buf lint
+
+      - name: Check breaking changes against main
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/main; then
+            buf breaking --against '.git#ref=origin/main'
+          else
+            echo "Skipping breaking check: origin/main not available."
+          fi
+
+  compile:
+    runs-on: ubuntu-latest
+    needs: [prepare-release, proto-quality]
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [rust, python, js]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Buf
+        if: matrix.language != 'rust'
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Setup Rust
+        if: matrix.language == 'rust'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Python
+        if: matrix.language == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node
+        if: matrix.language == 'js'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Compile Rust package
+        if: matrix.language == 'rust'
+        run: |
+          ./scripts/generate.sh rust
+          cargo check --manifest-path packages/rust/lirays-scada-proto/Cargo.toml
+
+      - name: Compile Python package
+        if: matrix.language == 'python'
+        run: |
+          ./scripts/generate.sh python
+          python -m pip install --upgrade pip build
+          rm -rf packages/python/lirays-scada-proto/dist
+          python -m build packages/python/lirays-scada-proto
+          python -m pip install packages/python/lirays-scada-proto/dist/*.whl
+          python - <<'PY'
+          import namespace.commands_pb2
+          import namespace.enums_pb2
+          import namespace.events_pb2
+          import namespace.types_pb2
+          print("Python protobuf modules import successfully")
+          PY
+
+      - name: Compile JS package
+        if: matrix.language == 'js'
+        run: |
+          ./scripts/generate.sh js
+      - name: Install JS dependencies
+        if: matrix.language == 'js'
+        working-directory: packages/js/lirays-scada-proto
+        run: npm install
+
+      - name: Build JS package
+        if: matrix.language == 'js'
+        working-directory: packages/js/lirays-scada-proto
+        run: npm run build
+
+      - name: Package dry run
+        if: matrix.language == 'js'
+        working-directory: packages/js/lirays-scada-proto
+        run: npm pack --dry-run
+
+  publish-rust:
+    runs-on: ubuntu-latest
+    needs: [prepare-release, compile]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Generate Rust code
+        run: ./scripts/generate.sh rust
+
+      - name: Publish Rust crate
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish --manifest-path packages/rust/lirays-scada-proto/Cargo.toml
+
+  publish-python:
+    runs-on: ubuntu-latest
+    needs: [prepare-release, compile]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Generate Python code
+        run: ./scripts/generate.sh python
+
+      - name: Build Python distribution
+        run: |
+          python -m pip install --upgrade pip build
+          rm -rf packages/python/lirays-scada-proto/dist
+          python -m build packages/python/lirays-scada-proto
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages-dir: packages/python/lirays-scada-proto/dist
+
+  publish-js:
+    runs-on: ubuntu-latest
+    needs: [prepare-release, compile]
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@v1
+
+      - name: Generate JS code
+        run: ./scripts/generate.sh js
+
+      - name: Install JS dependencies
+        working-directory: packages/js/lirays-scada-proto
+        run: npm install
+
+      - name: Build JS package
+        working-directory: packages/js/lirays-scada-proto
+        run: npm run build
+
+      - name: Publish to npm
+        working-directory: packages/js/lirays-scada-proto
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public

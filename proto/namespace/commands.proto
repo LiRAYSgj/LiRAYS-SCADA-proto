@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package namespace;
+
+import "namespace/enums.proto";
+import "namespace/types.proto";
+
+message AddCommand {
+  string cmd_id = 1;
+  optional string parent_id = 2;
+  repeated ItemMeta items_meta = 3;
+}
+
+message AddResponse {
+  string cmd_id = 1;
+}
+
+message AddBulkCommand {
+  string cmd_id = 1;
+  string parent_id = 2;
+  NamespaceSchema schema = 3;
+}
+
+message AddBulkResponse {
+  string cmd_id = 1;
+}
+
+message ListCommand {
+  string cmd_id = 1;
+  optional string folder_id = 2;
+}
+
+message ListResponse {
+  string cmd_id = 1;
+  repeated FolderInfo folders = 2;
+  repeated VarInfo variables = 3;
+}
+
+message SetCommand {
+  string cmd_id = 1;
+  repeated VarIdValue var_ids_values = 2;
+}
+
+message SetResponse {
+  string cmd_id = 1;
+}
+
+message GetCommand {
+  string cmd_id = 1;
+  repeated string var_ids = 2;
+}
+
+message GetResponse {
+  string cmd_id = 1;
+  repeated OptionalValue var_values = 2;
+}
+
+message SubscribeCommand {
+  string cmd_id = 1;
+  repeated string var_ids = 2;
+  repeated EventType events = 3;
+}
+
+message SubscribeResponse {
+  string cmd_id = 1;
+}
+
+message UnsubscribeCommand {
+  string cmd_id = 1;
+  repeated string var_ids = 2;
+  repeated EventType events = 3;
+}
+
+message UnsubscribeResponse {
+  string cmd_id = 1;
+}
+
+message DelCommand {
+  string cmd_id = 1;
+  repeated string item_ids = 2;
+}
+
+message DelResponse {
+  string cmd_id = 1;
+}
+
+message EditMetaCommand {
+  string cmd_id = 1;
+  string var_id = 2;
+  optional string unit = 3;
+  optional double min = 4;
+  optional double max = 5;
+  repeated string options = 6;
+  optional uint64 max_len = 7;
+}
+
+message EditMetaResponse {
+  string cmd_id = 1;
+}
+
+message InvalidCmdResponse {
+  string cmd_id = 1;
+}
+
+// Envelopes
+message Command {
+  oneof command_type {
+    AddCommand add = 1;
+    ListCommand list = 2;
+    SetCommand set = 3;
+    GetCommand get = 4;
+    DelCommand del = 5;
+    AddBulkCommand add_bulk = 6;
+    SubscribeCommand sub = 7;
+    UnsubscribeCommand unsub = 8;
+    EditMetaCommand edit_meta = 9;
+  }
+}
+
+message Response {
+  oneof response_type {
+    AddResponse add = 1;
+    ListResponse list = 2;
+    SetResponse set = 3;
+    GetResponse get = 4;
+    DelResponse del = 5;
+    InvalidCmdResponse inv = 6;
+    AddBulkResponse add_bulk = 7;
+    SubscribeResponse sub = 8;
+    UnsubscribeResponse unsub = 9;
+    EditMetaResponse edit_meta = 12;
+  }
+  OperationStatus status = 10;
+  optional string error_msg = 11;
+}

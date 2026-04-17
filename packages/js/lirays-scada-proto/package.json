@@ -1,0 +1,31 @@
+{
+  "name": "@lirays/scada-proto",
+  "version": "0.1.0",
+  "description": "Generated protobuf types for LiRAYS SCADA",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepack": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

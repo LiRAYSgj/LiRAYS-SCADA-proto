@@ -1,0 +1,15 @@
+[package]
+name = "lirays-scada-proto"
+version = "0.1.0"
+edition = "2021"
+description = "Generated protobuf types for LiRAYS SCADA"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/lirays/LiRAYS-SCADA-proto"
+
+[lib]
+name = "lirays_scada_proto"
+path = "src/lib.rs"
+
+[dependencies]
+prost = "0.14"

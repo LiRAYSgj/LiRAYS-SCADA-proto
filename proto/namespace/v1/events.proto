@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package namespace;
+package namespace.v1;
 
-import "namespace/types.proto";
+import "namespace/v1/types.proto";
 
 message FolderChanged {
     string folder_id = 1;

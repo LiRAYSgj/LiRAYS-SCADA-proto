@@ -6,6 +6,13 @@ description = "Generated protobuf types for LiRAYS SCADA"
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/lirays/LiRAYS-SCADA-proto"
+include = [
+  "Cargo.toml",
+  "README.md",
+  "build.rs",
+  "src/**",
+  "proto/**",
+]
 
 [lib]
 name = "lirays_scada_proto"
@@ -13,3 +20,8 @@ path = "src/lib.rs"
 
 [dependencies]
 prost = "0.14"
+
+[build-dependencies]
+prost-build = "0.14"
+protoc-bin-vendored = "3"
+walkdir = "2"

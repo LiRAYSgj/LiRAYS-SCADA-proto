@@ -42,8 +42,8 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Generate Rust code
-        run: ./scripts/generate.sh rust
+      - name: Vendor proto snapshot for Rust packaging
+        run: ./scripts/vendor-rust-proto.sh
 
       - name: Compile Rust crate
         run: cargo check --manifest-path packages/rust/lirays-scada-proto/Cargo.toml
@@ -60,8 +60,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1
+      - name: Setup protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "29.x"
 
       - name: Generate Python code
         run: ./scripts/generate.sh python
@@ -76,10 +78,10 @@ jobs:
         run: |
           python -m pip install packages/python/lirays-scada-proto/dist/*.whl
           python - <<'PY'
-          import namespace.commands_pb2
-          import namespace.enums_pb2
-          import namespace.events_pb2
-          import namespace.types_pb2
+          import namespace.v1.commands_pb2
+          import namespace.v1.enums_pb2
+          import namespace.v1.events_pb2
+          import namespace.v1.types_pb2
           print("Python protobuf modules import successfully")
           PY
 
@@ -90,20 +92,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Generate JS code
-        run: ./scripts/generate.sh js
+      - name: Setup protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "29.x"
 
       - name: Install JS dependencies
         working-directory: packages/js/lirays-scada-proto
         run: npm install
+
+      - name: Generate JS code
+        run: ./scripts/generate.sh js
 
       - name: Build JS package
         working-directory: packages/js/lirays-scada-proto

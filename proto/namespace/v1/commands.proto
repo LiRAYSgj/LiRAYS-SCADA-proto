@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-package namespace;
+package namespace.v1;
 
-import "namespace/enums.proto";
-import "namespace/types.proto";
+import "namespace/v1/enums.proto";
+import "namespace/v1/types.proto";
 
 message AddCommand {
   string cmd_id = 1;

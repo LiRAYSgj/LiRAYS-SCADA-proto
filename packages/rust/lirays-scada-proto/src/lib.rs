@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 
 pub mod namespace {
-    include!(concat!(env!("CARGO_MANIFEST_DIR"), "/src/generated/namespace.rs"));
+    pub mod v1 {
+        include!(concat!(env!("OUT_DIR"), "/namespace.v1.rs"));
+    }
 }

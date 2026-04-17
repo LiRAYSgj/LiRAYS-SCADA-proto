@@ -2,4 +2,4 @@
 
 Generated protobuf types for LiRAYS SCADA.
 
-Imports are exposed under the `namespace` Python package.
+Imports are exposed under the `namespace.v1` Python package.

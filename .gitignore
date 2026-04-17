@@ -21,14 +21,19 @@ target
 
 # Rust package artifacts
 packages/rust/lirays-scada-proto/Cargo.lock
+packages/rust/lirays-scada-proto/proto/
+packages/rust/lirays-scada-proto/src/generated/
 
 # Python build outputs
 **/__pycache__/
 packages/python/lirays-scada-proto/build/
 packages/python/lirays-scada-proto/dist/
 packages/python/lirays-scada-proto/*.egg-info/
+packages/python/lirays-scada-proto/**/*.egg-info/
+packages/python/lirays-scada-proto/src/namespace/v1/*_pb2.py
 
 # JavaScript build outputs
 packages/js/lirays-scada-proto/node_modules/
 packages/js/lirays-scada-proto/dist/
 packages/js/lirays-scada-proto/*.tgz
+packages/js/lirays-scada-proto/src/generated/

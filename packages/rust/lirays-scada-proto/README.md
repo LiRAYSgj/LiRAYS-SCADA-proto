@@ -1,3 +1,3 @@
 # lirays-scada-proto (Rust)
 
-Generated protobuf types for LiRAYS SCADA.
+Protobuf types for LiRAYS SCADA generated at build time from bundled `.proto` files.

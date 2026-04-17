@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package namespace;
+package namespace.v1;
 
-import "namespace/enums.proto";
+import "namespace/v1/enums.proto";
 
 message Value {
   oneof typed {

@@ -3,6 +3,10 @@
   "version": "0.1.1",
   "description": "Generated protobuf types for LiRAYS SCADA",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LiRAYSgj/LiRAYS-SCADA-proto"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

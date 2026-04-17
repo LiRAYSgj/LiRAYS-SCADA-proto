@@ -51,8 +51,6 @@ A single lockstep version is stored in `VERSION` and must match:
 - Release publishing is gated: **all Rust/Python/JS compile checks must pass before any publish job runs**.
 - Rust release job vendors `proto/` into the crate at runtime and publishes with `--allow-dirty`.
 
-### Required GitHub Secrets
+### GitHub Secrets
 
-- `CARGO_REGISTRY_TOKEN`
-- `PYPI_API_TOKEN`
-- `NPM_TOKEN`
+No registry tokens are required when Trusted Publishing is configured for crates.io, PyPI, and npm.

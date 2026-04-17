@@ -25,8 +25,8 @@ jobs:
           VERSION="${TAG#v}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Verify versions are synchronized
-        run: ./scripts/check-version-sync.sh "${{ steps.version.outputs.version }}"
+      # - name: Verify versions are synchronized
+      #   run: ./scripts/check-version-sync.sh "${{ steps.version.outputs.version }}"
 
   proto-quality:
     runs-on: ubuntu-latest

@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROTO_DIR="$ROOT_DIR/proto"
 JS_PACKAGE_DIR="$ROOT_DIR/packages/js/lirays-scada-proto"
-JS_LOCAL_PROTOC_GEN_ES="$JS_PACKAGE_DIR/node_modules/.bin/protoc-gen-es"
+JS_LOCAL_PROTOC_GEN_TS_PROTO="$JS_PACKAGE_DIR/node_modules/.bin/protoc-gen-ts_proto"
 
 TARGETS=("$@")
 if [ ${#TARGETS[@]} -eq 0 ]; then
@@ -35,32 +35,32 @@ collect_proto_files() {
   fi
 }
 
-resolve_js_protoc_gen_es() {
-  if [ -x "$JS_LOCAL_PROTOC_GEN_ES" ]; then
-    JS_PROTOC_GEN_ES="$JS_LOCAL_PROTOC_GEN_ES"
+resolve_js_protoc_gen_ts_proto() {
+  if [ -x "$JS_LOCAL_PROTOC_GEN_TS_PROTO" ]; then
+    JS_PROTOC_GEN_TS_PROTO="$JS_LOCAL_PROTOC_GEN_TS_PROTO"
     return 0
   fi
 
-  if command -v protoc-gen-es > /dev/null 2>&1; then
-    JS_PROTOC_GEN_ES="$(command -v protoc-gen-es)"
+  if command -v protoc-gen-ts_proto > /dev/null 2>&1; then
+    JS_PROTOC_GEN_TS_PROTO="$(command -v protoc-gen-ts_proto)"
     return 0
   fi
 
   require_cmd npm
-  echo "protoc-gen-es not found; installing JS dependencies in $JS_PACKAGE_DIR..."
+  echo "protoc-gen-ts_proto not found; installing JS dependencies in $JS_PACKAGE_DIR..."
   npm install --prefix "$JS_PACKAGE_DIR"
 
-  if [ -x "$JS_LOCAL_PROTOC_GEN_ES" ]; then
-    JS_PROTOC_GEN_ES="$JS_LOCAL_PROTOC_GEN_ES"
+  if [ -x "$JS_LOCAL_PROTOC_GEN_TS_PROTO" ]; then
+    JS_PROTOC_GEN_TS_PROTO="$JS_LOCAL_PROTOC_GEN_TS_PROTO"
     return 0
   fi
 
-  if command -v protoc-gen-es > /dev/null 2>&1; then
-    JS_PROTOC_GEN_ES="$(command -v protoc-gen-es)"
+  if command -v protoc-gen-ts_proto > /dev/null 2>&1; then
+    JS_PROTOC_GEN_TS_PROTO="$(command -v protoc-gen-ts_proto)"
     return 0
   fi
 
-  echo "Unable to find protoc-gen-es after dependency installation." >&2
+  echo "Unable to find protoc-gen-ts_proto after dependency installation." >&2
   exit 1
 }
 
@@ -84,15 +84,16 @@ generate_python() {
 generate_js() {
   require_cmd protoc
   collect_proto_files
-  resolve_js_protoc_gen_es
+  resolve_js_protoc_gen_ts_proto
 
+  rm -rf "$ROOT_DIR/packages/js/lirays-scada-proto/src/generated"
   mkdir -p "$ROOT_DIR/packages/js/lirays-scada-proto/src/generated"
 
   protoc \
     -I "$PROTO_DIR" \
-    --plugin="protoc-gen-es=$JS_PROTOC_GEN_ES" \
-    --es_out="$ROOT_DIR/packages/js/lirays-scada-proto/src/generated" \
-    --es_opt=target=ts,import_extension=.js \
+    --plugin="protoc-gen-ts_proto=$JS_PROTOC_GEN_TS_PROTO" \
+    --ts_proto_out="$ROOT_DIR/packages/js/lirays-scada-proto/src/generated" \
+    --ts_proto_opt=esModuleInterop=true,importSuffix=.js,exportCommonSymbols=false \
     "${PROTO_FILES[@]}"
 }
 

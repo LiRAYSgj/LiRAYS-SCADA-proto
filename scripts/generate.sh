@@ -126,9 +126,11 @@ if [ "$WANT_RUST" = true ]; then
 fi
 
 if [ "$WANT_PYTHON" = true ]; then
+  "$ROOT_DIR/scripts/sync-license.sh" python
   generate_python
 fi
 
 if [ "$WANT_JS" = true ]; then
+  "$ROOT_DIR/scripts/sync-license.sh" js
   generate_js
 fi

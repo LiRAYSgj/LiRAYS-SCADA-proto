@@ -10,6 +10,8 @@ if [ ! -d "$SOURCE_PROTO_DIR" ]; then
   exit 1
 fi
 
+"$ROOT_DIR/scripts/sync-license.sh" rust
+
 rm -rf "$TARGET_PROTO_DIR"
 mkdir -p "$TARGET_PROTO_DIR"
 cp -R "$SOURCE_PROTO_DIR"/. "$TARGET_PROTO_DIR"/

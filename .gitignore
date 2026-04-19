@@ -31,9 +31,11 @@ packages/python/lirays-scada-proto/dist/
 packages/python/lirays-scada-proto/*.egg-info/
 packages/python/lirays-scada-proto/**/*.egg-info/
 packages/python/lirays-scada-proto/src/namespace/v1/*_pb2.py
+packages/python/lirays-scada-proto/LICENSE
 
 # JavaScript build outputs
 packages/js/lirays-scada-proto/node_modules/
 packages/js/lirays-scada-proto/dist/
 packages/js/lirays-scada-proto/*.tgz
 packages/js/lirays-scada-proto/src/generated/
+packages/js/lirays-scada-proto/LICENSE

@@ -1,6 +1,6 @@
 [package]
 name = "lirays-scada-proto"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 description = "Generated protobuf types for LiRAYS SCADA"
 readme = "README.md"
@@ -9,6 +9,7 @@ repository = "https://github.com/lirays/LiRAYS-SCADA-proto"
 include = [
   "Cargo.toml",
   "README.md",
+  "LICENSE",
   "build.rs",
   "src/**",
   "proto/**",

@@ -1,6 +1,6 @@
 {
   "name": "@lirays/scada-proto",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Generated protobuf types for LiRAYS SCADA",
   "license": "MIT",
   "repository": {
@@ -18,7 +18,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

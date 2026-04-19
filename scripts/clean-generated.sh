@@ -29,3 +29,25 @@ git clean "${CLEAN_FLAGS[@]}" -- \
   packages/rust/lirays-scada-proto \
   packages/python/lirays-scada-proto \
   packages/js/lirays-scada-proto
+
+# Remove synchronized LICENSE copies when they are generated/untracked.
+LICENSE_COPIES=(
+  "packages/rust/lirays-scada-proto/LICENSE"
+  "packages/python/lirays-scada-proto/LICENSE"
+  "packages/js/lirays-scada-proto/LICENSE"
+)
+
+for path in "${LICENSE_COPIES[@]}"; do
+  if git ls-files --error-unmatch "$path" > /dev/null 2>&1; then
+    continue
+  fi
+
+  if [ -e "$path" ]; then
+    if [ "$DRY_RUN" = true ]; then
+      echo "Would remove generated file: $path"
+    else
+      rm -f "$path"
+      echo "Removed generated file: $path"
+    fi
+  fi
+done
